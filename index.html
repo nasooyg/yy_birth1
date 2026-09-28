@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>영은이의 마음을 맞춰 봐~</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+  :root {
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    --bg: #fff6e8;
+    --bg2: #f7e4c9;
+    --card: #fffdf9;
+    --ink: #4f3120;
+    --ink-soft: #8a6446;
+    --fur: #b9773f;        /* 푸들 털 */
+    --fur-light: #d9a26a;
+    --biscuit: #f3d9b1;
+    --blush: #f6c2b0;
+    --cream: #f1e2cc;
+    --accent: #a8622a;     /* 버튼 */
+    --accent-dark: #6f3d15;
+    --dark: #3a2314;       /* 눈, 코 */
+    --shadow: rgba(140, 90, 40, .28);
+    --font: "Gowun Dodum", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #2b1e16; --bg2: #21160f; --card: #3e2e22; --ink: #fbead4; --ink-soft: #d2b08a;
+      --fur: #c98a52; --fur-light: #e0ad78; --biscuit: #6b4f36; --blush: #8f5a4a; --cream: #57402d;
+      --accent: #d59254; --accent-dark: #7a4a20; --dark: #1c110a; --shadow: rgba(0, 0, 0, .4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #2b1e16; --bg2: #21160f; --card: #3e2e22; --ink: #fbead4; --ink-soft: #d2b08a;
+    --fur: #c98a52; --fur-light: #e0ad78; --biscuit: #6b4f36; --blush: #8f5a4a; --cream: #57402d;
+    --accent: #d59254; --accent-dark: #7a4a20; --dark: #1c110a; --shadow: rgba(0, 0, 0, .4);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    font-family: var(--font);
+    color: var(--ink);
+    background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%) fixed;
+    background-color: var(--bg);
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
+    line-height: 1.5;
+  }
+
+  /* 배경 장식 */
+  .deco-layer { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+  .deco { position: absolute; animation: bob 5s ease-in-out infinite; }
+  .deco svg { width: 100%; height: 100%; display: block; }
+  @keyframes bob { 0%,100% { transform: translateY(0) rotate(var(--r, 0deg)); } 50% { transform: translateY(-9px) rotate(calc(var(--r, 0deg) + 6deg)); } }
+
+  .app {
+    position: relative; z-index: 1;
+    max-width: 440px; margin: 0 auto;
+    min-height: 100vh; min-height: 100dvh;
+    padding: 28px 20px 40px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .screen { display: none; text-align: center; }
+  .screen.active { display: block; animation: pop .45s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes pop { from { opacity: 0; transform: scale(.94) translateY(14px); } to { opacity: 1; transform: none; } }
+
+  /* 곱슬곱슬 털뭉치 카드 */
+  .cloud-card {
+    position: relative;
+    background: var(--card);
+    border-radius: 64px;
+    padding: 44px 26px 34px;
+    margin-top: 40px;
+    box-shadow: 0 14px 0 var(--biscuit), 0 26px 40px var(--shadow);
+  }
+  .cloud-card::before, .cloud-card::after {
+    content: ""; position: absolute; background: var(--card); border-radius: 50%; z-index: -1;
+  }
+  .cloud-card::before { width: 110px; height: 110px; top: -40px; left: 34px; }
+  .cloud-card::after  { width: 140px; height: 140px; top: -56px; right: 40px; }
+  .cloud-card > * { position: relative; }
+
+  .badge-circle {
+    width: 150px; height: 150px; margin: 0 auto 16px;
+    border-radius: 50%;
+    background: var(--biscuit);
+    display: grid; place-items: center;
+    box-shadow: 0 0 0 10px var(--cream), 0 0 0 20px color-mix(in srgb, var(--cream) 50%, transparent);
+    overflow: hidden;
+  }
+  .badge-circle svg { width: 128px; height: 128px; margin-top: 8px; }
+
+  h1 { font-weight: 400; font-size: 30px; line-height: 1.4; margin: 0 0 12px; }
+  h2 { font-weight: 400; font-size: 24px; line-height: 1.45; margin: 0 0 22px; }
+  p.sub { margin: 0 0 26px; color: var(--ink-soft); font-size: 18px; line-height: 1.6; }
+
+  /* 버튼 */
+  .btn {
+    font-family: inherit; font-size: 21px; color: #fff;
+    background: var(--accent);
+    border: 0; border-radius: 999px;
+    padding: 17px 34px; width: 100%;
+    box-shadow: 0 8px 0 var(--accent-dark);
+    cursor: pointer;
+    transition: transform .12s, box-shadow .12s;
+  }
+  :root[data-theme="dark"] .btn { color: #2b1508; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn { color: #2b1508; } }
+  .btn:active { transform: translateY(6px); box-shadow: 0 2px 0 var(--accent-dark); }
+  .btn:focus-visible, .opt:focus-visible, input:focus-visible { outline: 4px solid var(--fur-light); outline-offset: 3px; }
+
+  /* 진행 바 */
+  .progress { position: relative; height: 22px; background: var(--card); border-radius: 999px; margin: 0 8px 30px; box-shadow: inset 0 3px 0 rgba(0,0,0,.06); }
+  .progress-fill { height: 100%; width: 0; border-radius: 999px; background: linear-gradient(90deg, var(--biscuit), var(--fur)); transition: width .4s cubic-bezier(.34,1.56,.64,1); min-width: 22px; position: relative; }
+  .progress-fill::after { content: "🐾"; position: absolute; right: -8px; top: -9px; font-size: 24px; }
+  .q-count { color: var(--ink-soft); font-size: 17px; margin-bottom: 10px; }
+
+  /* 선택지 */
+  .opts { display: grid; gap: 14px; }
+  .opt {
+    font-family: inherit; font-size: 19px; color: var(--ink); line-height: 1.45;
+    background: var(--card); border: 4px solid var(--c, var(--biscuit));
+    border-radius: 999px; padding: 15px 22px;
+    box-shadow: 0 6px 0 var(--c, var(--biscuit));
+    cursor: pointer; transition: transform .12s, background .12s;
+  }
+  .opt:nth-child(1) { --c: var(--blush); }
+  .opt:nth-child(2) { --c: var(--biscuit); }
+  .opt:nth-child(3) { --c: var(--fur-light); }
+  .opt:nth-child(4) { --c: var(--cream); }
+  .opt:active { transform: translateY(4px); }
+  .opt.picked { background: var(--biscuit); border-color: var(--fur); }
+
+  /* 결과 */
+  .gift-circle {
+    width: 170px; height: 170px; margin: 0 auto 18px; border-radius: 50%;
+    background: var(--biscuit);
+    display: grid; place-items: center; font-size: 84px;
+    box-shadow: 0 0 0 10px var(--cream), 0 0 0 20px color-mix(in srgb, var(--cream) 50%, transparent);
+  }
+
+  /* 입력 */
+  .field { display: block; text-align: left; margin-bottom: 16px; }
+  .field span { display: block; font-size: 17px; color: var(--ink-soft); margin: 0 0 6px 18px; }
+  input {
+    width: 100%; font-family: inherit; font-size: 19px; color: var(--ink);
+    background: color-mix(in srgb, var(--biscuit) 45%, var(--card));
+    border: 4px solid transparent; border-radius: 999px;
+    padding: 14px 22px;
+  }
+  input::placeholder { color: var(--ink-soft); opacity: .75; }
+  input:focus { border-color: var(--fur); outline: none; }
+  input.bad { border-color: #d9534f; }
+  .hint { min-height: 24px; margin: 4px 0 14px; color: #c23c38; font-size: 17px; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .hint { color: #ff9a92; } }
+  :root[data-theme="dark"] .hint { color: #ff9a92; }
+
+  .ghost { background: none; border: 0; font-family: inherit; color: var(--ink-soft); font-size: 17px; margin-top: 6px; cursor: pointer; text-decoration: underline; text-underline-offset: 4px; }
+
+
+  /* 뒤로가기 버튼 */
+  .back {
+    display: flex; align-items: center; justify-content: center;
+    width: 52px; height: 52px; margin: 0 0 14px; padding: 0;
+    border: 0; border-radius: 50%;
+    background: var(--card); color: var(--accent);
+    box-shadow: 0 5px 0 var(--biscuit), 0 10px 18px var(--shadow);
+    cursor: pointer; transition: transform .12s, box-shadow .12s;
+  }
+  .back svg { width: 26px; height: 26px; }
+  .back:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--biscuit); }
+  .back:focus-visible { outline: 4px solid var(--fur-light); outline-offset: 3px; }
+  .back-row { text-align: left; }
+
+  /* 선물 사진 */
+  .pic { width: 100%; height: 100%; display: grid; place-items: center; }
+  .pic img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+  .pic svg { width: 72%; height: 72%; }
+  .gift-circle { overflow: hidden; }
+
+  /* 선물 고르기 */
+  .gift-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 12px; margin-bottom: 26px; }
+  .gift-item {
+    font-family: inherit; font-size: 15px; color: var(--ink); line-height: 1.35;
+    background: none; border: 0; padding: 0; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  .gift-thumb {
+    width: 108px; height: 108px; border-radius: 50%; overflow: hidden;
+    background: var(--biscuit); display: grid; place-items: center;
+    box-shadow: 0 0 0 5px var(--cream);
+    transition: box-shadow .15s, transform .15s;
+  }
+  .gift-item.on .gift-thumb { box-shadow: 0 0 0 6px var(--accent); transform: translateY(-3px); }
+  .gift-item.on span { color: var(--accent); }
+  .gift-item:focus-visible { outline: 4px solid var(--fur-light); outline-offset: 4px; border-radius: 20px; }
+
+  #giftDesc, #doneMsg, #qText, .opt, .scene-q, .cell .cap { white-space: pre-line; }
+  .credit { margin: 16px 0 0; font-size: 15px; color: var(--ink-soft); }
+
+  /* ===== 그림 선택 화면 (전체 화면) ===== */
+  .app.wide { padding-left: 14px; padding-right: 14px; }
+  .scene-wrap { display: flex; flex-direction: column; gap: 14px; }
+  .scene-q {
+    font-size: 20px; line-height: 1.45; margin: 0 6px;
+    color: var(--ink); text-align: center;
+  }
+  .scene-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .cell {
+    font-family: inherit; color: var(--ink); cursor: pointer;
+    border: 0; padding: 12px 8px 10px; border-radius: 28px;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    transition: transform .12s, box-shadow .12s;
+  }
+  .cell .art { width: 100%; max-width: 128px; }
+  .cell .art svg { width: 100%; height: auto; display: block; }
+  .cell .cap { font-size: 15px; line-height: 1.35; min-height: 2.7em; display: flex; align-items: center; text-align: center; }
+  .cell:active { transform: scale(.96); }
+  .cell.picked { transform: scale(.94); }
+  .cell:focus-visible { outline: 4px solid var(--fur-light); outline-offset: 3px; }
+
+  /* 창문 */
+  .window-frame {
+    background: var(--accent); padding: 14px; border-radius: 34px;
+    box-shadow: 0 10px 0 var(--accent-dark), 0 20px 32px var(--shadow);
+  }
+  .window-frame .scene-grid { gap: 14px; }
+  .window-frame .cell { background: linear-gradient(180deg, #d7ecfb 0%, #f3f8fd 100%); border-radius: 22px 22px 8px 8px; }
+  .window-frame .cell .cap { color: #4f3120; }
+  .window-frame .cell.picked { box-shadow: inset 0 0 0 5px var(--butter, #f3d9b1); }
+  .sill { height: 16px; margin: 10px 4px 0; border-radius: 999px; background: var(--fur-light); }
+
+  /* 식탁 */
+  .table-top {
+    background: var(--fur-light); padding: 16px 12px 20px; border-radius: 34px;
+    box-shadow: 0 10px 0 var(--accent), 0 20px 32px var(--shadow);
+    position: relative;
+  }
+  .table-top::before {
+    content: ""; position: absolute; inset: 10px 8px; border-radius: 26px;
+    border: 3px dashed color-mix(in srgb, var(--card) 55%, transparent);
+    pointer-events: none;
+  }
+  .table-top .cell { background: var(--card); border-radius: 50% 50% 34px 34px; }
+  .table-top .cell.picked { box-shadow: 0 0 0 5px var(--accent); }
+
+  /* 집 */
+  .house { filter: drop-shadow(0 16px 26px var(--shadow)); }
+  .roof { display: block; width: 100%; height: auto; margin-bottom: -2px; }
+  .house-body { background: var(--accent); padding: 12px; border-radius: 0 0 30px 30px; }
+  .house-body .cell { background: var(--card); border-radius: 18px; }
+  .house-body .cell .cap { color: var(--ink); }
+  .house-body .cell.picked { box-shadow: inset 0 0 0 5px var(--fur-light); }
+
+  @media (max-width: 340px) { .scene-q { font-size: 18px; } .cell .cap { font-size: 13.5px; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .deco, .screen.active { animation: none; }
+    .progress-fill, .btn, .opt, .back, .gift-thumb, .cell { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- 갈색 푸들 얼굴 -->
+    <symbol id="poodle" viewBox="0 0 200 200">
+      <!-- 귀 (곱슬 뭉치) -->
+      <g style="fill:var(--fur)">
+        <circle cx="38" cy="108" r="30"/><circle cx="28" cy="138" r="24"/><circle cx="50" cy="152" r="23"/><circle cx="24" cy="112" r="18"/>
+        <circle cx="162" cy="108" r="30"/><circle cx="172" cy="138" r="24"/><circle cx="150" cy="152" r="23"/><circle cx="176" cy="112" r="18"/>
+      </g>
+      <!-- 머리 위 뽀글 뭉치 -->
+      <g style="fill:var(--fur)">
+        <circle cx="100" cy="36" r="27"/><circle cx="72" cy="52" r="21"/><circle cx="128" cy="52" r="21"/><circle cx="100" cy="62" r="20"/>
+      </g>
+      <circle cx="100" cy="112" r="56" style="fill:var(--fur)"/>
+      <!-- 주둥이 -->
+      <ellipse cx="100" cy="134" rx="32" ry="25" style="fill:var(--biscuit)"/>
+      <!-- 볼터치 -->
+      <circle cx="66" cy="128" r="9" style="fill:var(--blush);opacity:.75"/>
+      <circle cx="134" cy="128" r="9" style="fill:var(--blush);opacity:.75"/>
+      <!-- 눈 -->
+      <circle cx="76" cy="106" r="8" style="fill:var(--dark)"/><circle cx="124" cy="106" r="8" style="fill:var(--dark)"/>
+      <circle cx="79" cy="103" r="2.8" fill="#fff"/><circle cx="127" cy="103" r="2.8" fill="#fff"/>
+      <!-- 코, 입 -->
+      <ellipse cx="100" cy="124" rx="11" ry="8" style="fill:var(--dark)"/>
+      <ellipse cx="97" cy="121.5" rx="3" ry="1.8" fill="#fff" opacity=".5"/>
+      <path d="M100 132 V138 M100 138 Q92 148 82 140 M100 138 Q108 148 118 140" fill="none" style="stroke:var(--dark)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <ellipse cx="100" cy="150" rx="8" ry="9" style="fill:var(--blush)"/>
+    </symbol>
+    <symbol id="heart" viewBox="0 0 100 100">
+      <path d="M50 84 C14 58 8 32 26 20 C38 13 48 19 50 30 C52 19 62 13 74 20 C92 32 86 58 50 84 Z" fill="currentColor" stroke="currentColor" stroke-width="8" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="star" viewBox="0 0 100 100">
+      <polygon points="50,10 61,38 91,40 68,59 76,88 50,72 24,88 32,59 9,40 39,38" fill="currentColor" stroke="currentColor" stroke-width="10" stroke-linejoin="round"/>
+    </symbol>
+    <!-- 뽀글뽀글 털뭉치(구름) -->
+    <symbol id="cloud" viewBox="0 0 120 70">
+      <g fill="currentColor"><circle cx="30" cy="42" r="20"/><circle cx="54" cy="28" r="24"/><circle cx="82" cy="30" r="22"/><circle cx="98" cy="46" r="18"/><rect x="18" y="42" width="84" height="22" rx="11"/></g>
+    </symbol>
+    <symbol id="paw" viewBox="0 0 100 100">
+      <g fill="currentColor"><ellipse cx="50" cy="66" rx="24" ry="20"/><circle cx="20" cy="42" r="10"/><circle cx="40" cy="26" r="11"/><circle cx="62" cy="26" r="11"/><circle cx="82" cy="42" r="10"/></g>
+    </symbol>
+    <symbol id="bone" viewBox="0 0 120 60">
+      <g fill="currentColor"><rect x="20" y="20" width="80" height="20" rx="10"/><circle cx="18" cy="18" r="13"/><circle cx="18" cy="42" r="13"/><circle cx="102" cy="18" r="13"/><circle cx="102" cy="42" r="13"/></g>
+    </symbol>
+  </defs>
+</svg>
+<div class="deco-layer" id="decoLayer" aria-hidden="true"></div>
+
+<main class="app">
+
+  <!-- 1. 시작 -->
+  <section class="screen active" id="s-start">
+    <div class="cloud-card">
+      <div class="badge-circle" aria-hidden="true"><svg viewBox="0 0 200 200"><use href="#poodle"/></svg></div>
+      <h1>생일을 맞은<br>영은이의 마음을 맞춰 봐~</h1>
+      <p class="sub">질문에 답하면 깜짝 선물이 나와요 🐾</p>
+      <button class="btn" id="startBtn">시작하기</button>
+      <p class="credit">by 어진, 수영</p>
+    </div>
+  </section>
+
+  <!-- 2. 질문 -->
+  <section class="screen" id="s-quiz">
+    <div class="back-row"><button class="back" type="button" data-back aria-label="뒤로가기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"/></svg></button></div>
+    <div class="q-count" id="qCount"></div>
+    <div class="progress" aria-hidden="true"><div class="progress-fill" id="bar"></div></div>
+    <div class="cloud-card">
+      <h2 id="qText"></h2>
+      <div class="opts" id="opts"></div>
+    </div>
+  </section>
+
+
+  <!-- 2-b. 그림으로 고르는 질문 -->
+  <section class="screen" id="s-scene">
+    <div class="back-row"><button class="back" type="button" data-back aria-label="뒤로가기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"/></svg></button></div>
+    <div class="scene-wrap" id="sceneBody"></div>
+  </section>
+
+  <!-- 3. 결과 -->
+  <section class="screen" id="s-result">
+    <div class="back-row"><button class="back" type="button" data-back aria-label="뒤로가기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"/></svg></button></div>
+    <div class="cloud-card">
+      <p class="sub" style="margin-bottom:14px">영은이에게 딱 어울리는 선물은…</p>
+      <div class="gift-circle" id="giftPic" aria-hidden="true"></div>
+      <h2 id="giftName" style="margin-bottom:10px"></h2>
+      <p class="sub" id="giftDesc"></p>
+      <button class="btn" id="claimBtn">이걸로 할래요!</button>
+      <button class="ghost" id="swapBtn">다른 선물로 바꿀래요</button>
+    </div>
+  </section>
+
+  <!-- 4. 선물 바꾸기 -->
+  <section class="screen" id="s-swap">
+    <div class="back-row"><button class="back" type="button" data-back aria-label="뒤로가기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"/></svg></button></div>
+    <div class="cloud-card">
+      <h2>영은이가 원하는<br>선물로 바꿀 수 있어요!</h2>
+      <p class="sub">마음에 드는 걸 골라주세요</p>
+      <div class="gift-grid" id="giftGrid"></div>
+      <button class="btn" id="swapDoneBtn">이걸로 할래요!</button>
+    </div>
+  </section>
+
+  <!-- 5. 완료 -->
+  <section class="screen" id="s-done">
+    <div class="back-row"><button class="back" type="button" data-back aria-label="뒤로가기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"/></svg></button></div>
+    <div class="cloud-card">
+      <div class="gift-circle" id="donePic" aria-hidden="true"></div>
+      <h1 id="doneTitle"></h1>
+      <p class="sub" id="donePicked"></p>
+      <p class="sub" id="doneMsg"></p>
+      <button class="ghost" id="againBtn">처음부터 다시 하기</button>
+    </div>
+  </section>
+
+</main>
+
+
+<script>
+  /* ============================================================
+     ★ 여기만 고치면 됩니다 ★
+
+     - 화면 문구는 아래 TEXT 에서 고치세요.
+       <br> 을 넣으면 줄이 바뀝니다. (doneMsg 는 \n 을 쓰세요)
+     - 질문·선택지는 QUESTIONS, 선물 설명은 GIFTS 에서 고치세요.
+       문장 안에 \n 을 넣으면 그 자리에서 줄이 바뀝니다.
+       예) "아침밥 시간!\n오늘 식탁에 올라온 건?"
+     - 선물 사진은 images 폴더에 넣으세요.
+       light1 / light2 / chair1 / chair2 / clock1 / clock2
+     ============================================================ */
+
+  const TEXT = {
+    title:     "생일을 맞은<br>영은이의 마음을 맞춰 봐~",
+    subtitle:  "질문에 답하면 깜짝 선물이 나와요 🐾",
+    startBtn:  "시작하기",
+    credit:    "by 어진, 수영",
+    resultLead:"영은이에게 딱 어울리는 선물은…",
+    swapTitle: "영은이가 원하는<br>선물로 바꿀 수 있어요!",
+    swapSub:   "마음에 드는 걸 골라주세요",
+    doneTitle: "선물을 골랐어요!",
+    doneMsg:   "이메일 보내기는\n이번에 못만들었어요.\n무슨 선물을 골랐는지와 주소를\n막내들에게 알려주세요~~♥♥"
+  };
+
+  // ============================================================
+  //  선물 이미지
+  //  images 폴더에 clock1.png, clock2.png, light1.png, light2.png,
+  //  chair1.png, chair2.png 를 넣으면 자동으로 사진이 뜹니다.
+  //  (사진이 없으면 아래 그림이 대신 나와요)
+  //  확장자가 .jpg 라면 아래 IMG_EXT 를 "jpg" 로 바꾸세요.
+  // ============================================================
+  const IMG_DIR = "images";
+  const IMG_EXT = "png";
+
+  const GIFTS = {
+    light1: {
+      name: "베이글 조명",
+      desc: "영은이의 하루엔 빛이 제일 중요해!\n창문 열고 햇살부터 들이는 사람이거든.\n말랑 동그란 베이글 불빛이 켜지면\n방 안이 통째로 아침이 돼요.",
+      fb: "bagel"
+    },
+    light2: {
+      name: "버섯 조명",
+      desc: "영은이는 포근한 빛을 좋아하는 사람!\n쨍한 불빛보다 은은한 게 딱 맞아요.\n버섯 하나 톡 켜두면\n방 구석까지 몽글몽글해져요.",
+      fb: "mushroom"
+    },
+    chair1: {
+      name: "등받침 좌식 의자",
+      desc: "영은이는 바닥에 앉아 오래 머무는 사람!\n벽에 등 붙이고 다리 쭉 뻗는 게 제일 편하죠.\n이제 벽 대신 이 의자가 등을 받쳐줘요.\n허리야, 오늘부터 편하게 지내자~",
+      fb: "chair1"
+    },
+    chair2: {
+      name: "푹신 좌식 의자",
+      desc: "영은이의 자리는 언제나 폭신한 곳!\n쿠션 끌어안고 뒹굴뒹굴하는 게 최고죠.\n앉는 순간 푹— 하고 감싸주니까\n한번 앉으면 일어나기 힘들 거예요.",
+      fb: "chair2"
+    },
+    clock1: {
+      name: "네잎클로버 시계",
+      desc: "영은이는 시간을 잘 챙기는 사람!\n하루를 반듯하게 굴리는 타입이죠.\n벽에 네잎클로버가 걸리면\n시간 볼 때마다 행운도 같이 봐요.",
+      fb: "clover"
+    },
+    clock2: {
+      name: "털 토마토 시계",
+      desc: "영은이의 벽엔 귀여운 게 걸려야 해요!\n시간도 보고 기분도 챙기는 사람이니까.\n북슬북슬한 토마토가 똑딱똑딱—\n쳐다볼 때마다 웃음이 나요.",
+      fb: "tomato"
+    }
+  };
+  const GIFT_KEYS = ["light1", "light2", "chair1", "chair2", "clock1", "clock2"];
+
+  // 사진이 없을 때 대신 나오는 그림
+  const FALLBACK = {
+    bagel: `<svg viewBox="0 0 120 120"><circle cx="60" cy="62" r="42" style="fill:var(--fur-light)"/><circle cx="60" cy="62" r="40" fill="none" style="stroke:var(--biscuit)" stroke-width="7"/><circle cx="60" cy="62" r="15" style="fill:var(--card)"/><g style="fill:var(--card)"><ellipse cx="42" cy="34" rx="5" ry="2.6" transform="rotate(-25 42 34)"/><ellipse cx="60" cy="27" rx="5" ry="2.6"/><ellipse cx="80" cy="36" rx="5" ry="2.6" transform="rotate(22 80 36)"/><ellipse cx="90" cy="56" rx="5" ry="2.6" transform="rotate(70 90 56)"/></g><rect x="57" y="4" width="6" height="18" rx="3" style="fill:var(--ink-soft)"/></svg>`,
+    mushroom: `<svg viewBox="0 0 120 120"><rect x="46" y="62" width="28" height="42" rx="14" style="fill:var(--cream)"/><path d="M14 66 A46 40 0 0 1 106 66 Z" style="fill:var(--accent)"/><g style="fill:var(--card)"><circle cx="40" cy="48" r="8"/><circle cx="66" cy="38" r="10"/><circle cx="88" cy="55" r="7"/><circle cx="56" cy="60" r="6"/></g><rect x="36" y="100" width="48" height="12" rx="6" style="fill:var(--biscuit)"/></svg>`,
+    chair1: `<svg viewBox="0 0 120 120"><path d="M22 96 V44 a12 12 0 0 1 12-12 h6 a12 12 0 0 1 12 12 V96 Z" style="fill:var(--accent)"/><rect x="22" y="80" width="82" height="26" rx="13" style="fill:var(--fur-light)"/><rect x="30" y="40" width="14" height="46" rx="7" style="fill:var(--biscuit)"/><g fill="none" style="stroke:var(--biscuit)" stroke-width="4" stroke-linecap="round"><path d="M52 92 h44"/></g></svg>`,
+    chair2: `<svg viewBox="0 0 120 120"><g style="fill:var(--accent)"><circle cx="34" cy="62" r="24"/><circle cx="34" cy="44" r="18"/></g><g style="fill:var(--fur-light)"><circle cx="46" cy="88" r="20"/><circle cx="74" cy="88" r="20"/><circle cx="96" cy="86" r="16"/><rect x="40" y="76" width="60" height="26" rx="13"/></g><circle cx="28" cy="40" r="5" style="fill:var(--biscuit)"/></svg>`,
+    clover: `<svg viewBox="0 0 120 120"><g style="fill:var(--accent)"><circle cx="60" cy="34" r="22"/><circle cx="86" cy="60" r="22"/><circle cx="60" cy="86" r="22"/><circle cx="34" cy="60" r="22"/></g><circle cx="60" cy="60" r="26" style="fill:var(--card)"/><g style="stroke:var(--ink)" stroke-width="4" stroke-linecap="round"><path d="M60 46 V60"/><path d="M60 60 L70 66"/></g><circle cx="60" cy="60" r="3.5" style="fill:var(--ink)"/></svg>`,
+    tomato: `<svg viewBox="0 0 120 120"><g style="fill:var(--blush)"><circle cx="60" cy="68" r="38"/><circle cx="30" cy="56" r="14"/><circle cx="90" cy="56" r="14"/><circle cx="40" cy="96" r="13"/><circle cx="80" cy="96" r="13"/></g><circle cx="60" cy="68" r="25" style="fill:var(--card)"/><g style="stroke:var(--ink)" stroke-width="4" stroke-linecap="round"><path d="M60 54 V68"/><path d="M60 68 L69 73"/></g><circle cx="60" cy="68" r="3.5" style="fill:var(--ink)"/><g style="fill:var(--accent)"><ellipse cx="60" cy="28" rx="9" ry="5"/><ellipse cx="44" cy="32" rx="9" ry="5" transform="rotate(-25 44 32)"/><ellipse cx="76" cy="32" rx="9" ry="5" transform="rotate(25 76 32)"/></g></svg>`
+  };
+
+  function giftPicture(key, size) {
+    const g = GIFTS[key];
+    const wrap = document.createElement("div");
+    wrap.className = "pic";
+    wrap.innerHTML = FALLBACK[g.fb];
+    const img = document.createElement("img");
+    img.alt = g.name;
+    img.onload = () => { wrap.innerHTML = ""; wrap.appendChild(img); };
+    img.onerror = () => {};
+    img.src = `${IMG_DIR}/${key}.${IMG_EXT}`;
+    return wrap;
+  }
+
+  // ============================================================
+  //  질문 — [축A(light/chair/clock), 축B(+1 또렷 / -1 폭신)]
+  // ============================================================
+  const QUESTIONS = [
+    { q: "흐아암~ 좋은 아침이야! 기지개를 피면서 일어났다. 오늘 나의 기분은?", o: [
+      ["최고로 좋음", "light", -1],
+      ["찌뿌둥~ 하지만 오늘도 파이팅!", "chair", -1],
+      ["오늘 하루는 일정이 꽉꽉! 바쁘다 바빠!", "clock", 1],
+      ["여유롭게 준비하고 나가야겠어", "light", 1]
+    ]},
+    { q: "이불 밖은 위험해... 그래도 몸을 일으켰다. 제일 먼저 뭐부터 하지?", o: [
+      ["커튼부터 촤악! 햇빛 좀 들여보내자", "light", 1],
+      ["눈도 못 뜬 채 화장실로 직행이지", "clock", 1],
+      ["폰만 챙겨서 다시 눕기, 딱 5분만~", "chair", -1],
+      ["일단 부엌 가서 물 한 잔 들이켜야지", "clock", -1]
+    ]},
+    { q: "창문을 열었더니 오늘의 날씨가! 어떤 아침이 제일 반갑지?", o: [
+      ["우와, 눈부셔! 햇살이 쨍쨍하네", "light", 1],
+      ["구름이 보송보송, 이런 하늘 좋아", "light", -1],
+      ["어? 비 온다. 창문 두드리는 소리 최고", "chair", -1],
+      ["공기가 서늘하고 맑아, 상쾌하다!", "clock", 1]
+    ]},
+    { q: "아침밥 시간! 오늘 내 식탁에 올라온 건?", o: [
+      ["갓 구운 빵에 커피 한 잔이면 완벽하지", "light", 1],
+      ["역시 아침은 따끈한 국에 밥이야~", "chair", -1],
+      ["요거트에 과일 듬뿍! 상큼하게 시작", "clock", -1],
+      ["아침은 무슨, 물 한 잔이면 충분해", "clock", 1]
+    ]},
+    { q: "밥 먹으면서 뭐 좀 틀어놔야지. 오늘은 뭘로 할까?", o: [
+      ["도가니 도가니 RED RED ~ 최신곡 플레이!", "light", -1],
+      ["어제 보다 만 드라마, 딱 한 편만 더!", "chair", -1],
+      ["유투브에서 오늘 날씨 검색", "clock", 1],
+      ["아무것도 안 틀래, 오늘은 조용한 게 좋아", "light", 1]
+    ]},
+    { q: "씻고 나와 옷장 앞에 섰다. 오늘의 나는?", o: [
+      ["새로 산 예쁜 블라우스!", "light", 1],
+      ["오늘 발표회가 있다... 깔끔한 셔츠 스타일!", "clock", 1],
+      ["날씨가 쌀쌀해졌어, 오늘은 니트!", "chair", -1],
+      ["기분 전환이 필요해, 눈에 확 띄는 스타일", "light", -1]
+    ]},
+    { q: "할 일 하다가 잠깐 쉬는 시간~ 지금 내 자세는?", o: [
+      ["벽에 등 딱 붙이고 다리 쭉 뻗기", "chair", 1],
+      ["쿠션 끌어안고 엎드려서 뒹굴뒹굴", "chair", -1],
+      ["창가에 서서 그냥 멍~ 때리는 중", "light", -1],
+      ["딱 5분만 눈 감자, 시계 보면서", "clock", 1]
+    ]},
+    { q: "우리 집에서 제일 좋아하는 자리는?", o: [
+      ["벽에 기대 앉는 내 자리", "chair", 1],
+      ["바닥에 그냥 드러누워~", "chair", -1],
+      ["화장대 앞에 잠깐 앉아볼까?", "light", -1],
+      ["블로그 쓰는 책상 앞 내 자리!", "clock", 1]
+    ]},
+    { q: "집을 둘러보다 문득 아쉬운 게 생각났어. 뭐였더라?", o: [
+      ["엉덩이가 좀 딱딱한 것 같네...", "chair", -1],
+      ["분위기 전환을 할 수 있을까?", "light", -1],
+      ["어? 지금 몇 시지? 확인할 게 없네", "clock", 1],
+      ["오래 앉아 있으면 허리가 배기더라", "chair", 1]
+    ]},
+    { q: "하루를 마무리하는 밤. 불 끄기 전 마지막 장면은?", o: [
+      ["은은한 조명 하나만 켜두고 뒹굴", "light", -1],
+      ["상을 펴놓고 오늘 하루 정리", "chair", 1],
+      ["내일 일정 한 번 더 확인", "clock", 1],
+      ["이불 속으로 쏙, 바로 굿나잇", "chair", -1]
+    ]}
+  ];
+
+  // ---------- 배경 장식 ----------
+  const decoSpec = [
+    ["cloud", 4, 6, 110, "--cream", 0], ["cloud", 66, 12, 90, "--biscuit", 1.2], ["cloud", 8, 74, 100, "--biscuit", .6],
+    ["cloud", 72, 82, 120, "--cream", 2],
+    ["heart", 80, 4, 34, "--blush", .3], ["heart", 6, 30, 28, "--blush", 1.5], ["heart", 88, 44, 36, "--blush", .9],
+    ["heart", 26, 91, 30, "--blush", 2.2],
+    ["star", 20, 14, 30, "--fur-light", .5], ["star", 90, 26, 26, "--fur-light", 1.8], ["star", 4, 55, 32, "--fur-light", 2.5],
+    ["star", 46, 95, 24, "--fur-light", 1.3],
+    ["paw", 50, 4, 30, "--fur-light", 1], ["paw", 92, 70, 32, "--biscuit", .2], ["paw", 3, 88, 30, "--fur-light", 1.7],
+    ["paw", 60, 62, 22, "--cream", 2],
+    ["bone", 34, 2, 56, "--biscuit", .8], ["bone", 78, 90, 60, "--fur-light", 1.4]
+  ];
+  const layer = document.getElementById("decoLayer");
+  decoSpec.forEach(([t, x, y, sz, c, d], i) => {
+    const el = document.createElement("div");
+    el.className = "deco";
+    const h = t === "cloud" ? sz * 0.58 : t === "bone" ? sz * 0.5 : sz;
+    el.style.cssText = `left:${x}%;top:${y}%;width:${sz}px;height:${h}px;color:var(${c});animation-delay:${d}s;--r:${(i % 2 ? 1 : -1) * 10}deg;opacity:.9`;
+    el.innerHTML = `<svg><use href="#${t}"/></svg>`;
+    layer.appendChild(el);
+  });
+
+  // ---------- 화면 전환 ----------
+  const $ = id => document.getElementById(id);
+  function show(id) {
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    $(id).classList.add("active");
+    document.querySelector(".app").classList.toggle("wide", id === "s-scene");
+    window.scrollTo(0, 0);
+  }
+
+  let idx = 0, answers = [], resultKey = null, finalKey = null, swapPick = null;
+
+  // ============================================================
+  //  그림 선택 화면 (Q3 창문 / Q4 식탁 / Q8 집)  — 질문 번호는 0부터
+  // ============================================================
+  const ART = {
+    // 날씨
+    sun: `<svg viewBox="0 0 120 84"><circle cx="60" cy="42" r="21" fill="#ffcf4a"/><g stroke="#ffcf4a" stroke-width="6" stroke-linecap="round"><path d="M60 8v9M60 67v9M26 42h-9M103 42h-9M36 18l-6-6M90 72l-6-6M84 18l6-6M30 72l6-6"/></g></svg>`,
+    cloudy: `<svg viewBox="0 0 120 84"><g fill="#ffffff"><circle cx="40" cy="42" r="19"/><circle cx="62" cy="32" r="23"/><circle cx="84" cy="44" r="17"/><rect x="26" y="42" width="72" height="22" rx="11"/></g><g fill="#e4eef7"><circle cx="30" cy="66" r="11"/><circle cx="50" cy="68" r="9"/><rect x="24" y="64" width="34" height="12" rx="6"/></g></svg>`,
+    rain: `<svg viewBox="0 0 120 84"><g fill="#c3d6e6"><circle cx="42" cy="32" r="17"/><circle cx="64" cy="24" r="21"/><circle cx="84" cy="34" r="15"/><rect x="28" y="32" width="70" height="20" rx="10"/></g><g stroke="#7fb4dc" stroke-width="6" stroke-linecap="round"><path d="M42 60l-5 14M62 60l-5 14M82 60l-5 14"/></g></svg>`,
+    crisp: `<svg viewBox="0 0 120 84"><circle cx="86" cy="26" r="15" fill="#ffe7a3"/><g stroke="#9fd4e8" stroke-width="6" stroke-linecap="round" fill="none"><path d="M14 40h44a9 9 0 1 0-9-9"/><path d="M22 58h38a8 8 0 1 1-8 8"/></g><g fill="#a8d8a0"><ellipse cx="34" cy="24" rx="9" ry="5" transform="rotate(-25 34 24)"/><ellipse cx="96" cy="60" rx="8" ry="4.5" transform="rotate(20 96 60)"/></g></svg>`,
+    // 아침밥
+    bread: `<svg viewBox="0 0 120 96"><ellipse cx="58" cy="82" rx="46" ry="7" fill="#e6d3b8"/><ellipse cx="42" cy="58" rx="30" ry="22" fill="#d9a26a"/><ellipse cx="42" cy="52" rx="24" ry="15" fill="#e8c396"/><g stroke="#c98a52" stroke-width="3.5" stroke-linecap="round"><path d="M30 48l8-7M42 46l8-7M54 50l6-6"/></g><rect x="78" y="46" width="30" height="30" rx="7" fill="#fff" stroke="#c98a52" stroke-width="4"/><path d="M110 54h4a8 8 0 0 1 0 15h-4" fill="none" stroke="#c98a52" stroke-width="4"/><rect x="83" y="51" width="20" height="10" rx="4" fill="#8b5a2b"/></svg>`,
+    soup: `<svg viewBox="0 0 120 96"><ellipse cx="60" cy="82" rx="46" ry="8" fill="#e6d3b8"/><path d="M22 46h76l-8 30a10 10 0 0 1-10 8H40a10 10 0 0 1-10-8z" fill="#fff"/><ellipse cx="60" cy="47" rx="38" ry="10" fill="#d97b4a"/><g fill="#a8d8a0"><circle cx="50" cy="45" r="4"/><circle cx="70" cy="48" r="3.5"/></g><g stroke="#e4d5c0" stroke-width="5" stroke-linecap="round" fill="none"><path d="M46 24c6-6-6-10 0-16M74 24c6-6-6-10 0-16"/></g></svg>`,
+    yogurt: `<svg viewBox="0 0 120 96"><path d="M34 40h52l-7 40a8 8 0 0 1-8 7H49a8 8 0 0 1-8-7z" fill="#fff"/><ellipse cx="60" cy="40" rx="26" ry="9" fill="#fdf5ea"/><g><circle cx="48" cy="34" r="8" fill="#e8607d"/><circle cx="66" cy="31" r="9" fill="#a8557f"/><circle cx="78" cy="38" r="6" fill="#e8607d"/><ellipse cx="57" cy="24" rx="7" ry="4" fill="#a8d8a0"/></g></svg>`,
+    water: `<svg viewBox="0 0 120 96"><path d="M42 26h36l-5 56a8 8 0 0 1-8 7H55a8 8 0 0 1-8-7z" fill="#eaf4fb"/><path d="M45 48h30l-3 34a7 7 0 0 1-7 6H55a7 7 0 0 1-7-6z" fill="#a8d5f0"/><ellipse cx="60" cy="26" rx="18" ry="6" fill="#fff"/><circle cx="52" cy="60" r="4" fill="#fff" opacity=".7"/><circle cx="66" cy="70" r="3" fill="#fff" opacity=".7"/></svg>`,
+    // 집 안 자리
+    wallseat: `<svg viewBox="0 0 120 96"><rect x="10" y="8" width="100" height="62" rx="6" fill="#f2e3cd"/><rect x="10" y="66" width="100" height="22" rx="5" fill="#d9a26a"/><rect x="24" y="30" width="34" height="40" rx="10" fill="#c98a52"/><rect x="24" y="58" width="62" height="14" rx="7" fill="#e8b57e"/><circle cx="76" cy="52" r="13" fill="#f6c2b0"/></svg>`,
+    floorlie: `<svg viewBox="0 0 120 96"><rect x="6" y="12" width="108" height="76" rx="10" fill="#f2e3cd"/><ellipse cx="60" cy="56" rx="48" ry="28" fill="#e8b57e"/><ellipse cx="60" cy="56" rx="38" ry="21" fill="#f6dccd"/><rect x="24" y="40" width="30" height="19" rx="9" fill="#fff" stroke="#e0cbb4" stroke-width="3"/><path d="M56 48h40a8 8 0 0 1 8 8v8a6 6 0 0 1-6 6H56z" fill="#f6c2b0"/><g stroke="#e19aa8" stroke-width="3" stroke-linecap="round"><path d="M64 56v14M78 56v14M92 58v12"/></g><g fill="#c98a52"><circle cx="18" cy="24" r="4"/><circle cx="102" cy="80" r="4"/></g></svg>`,
+    vanity: `<svg viewBox="0 0 120 96"><rect x="6" y="6" width="108" height="82" rx="8" fill="#f2e3cd"/><ellipse cx="60" cy="34" rx="26" ry="28" fill="#e9f2f8" stroke="#d9a26a" stroke-width="5"/><g fill="#ffe7a3"><circle cx="30" cy="20" r="5"/><circle cx="90" cy="20" r="5"/><circle cx="24" cy="42" r="5"/><circle cx="96" cy="42" r="5"/></g><rect x="20" y="64" width="80" height="10" rx="5" fill="#d9a26a"/><rect x="40" y="52" width="10" height="12" rx="4" fill="#e8607d"/><rect x="58" y="50" width="12" height="14" rx="5" fill="#a8557f"/><rect x="76" y="54" width="9" height="10" rx="4" fill="#f6c2b0"/></svg>`,
+    desk: `<svg viewBox="0 0 120 96"><rect x="6" y="6" width="108" height="82" rx="8" fill="#f2e3cd"/><rect x="14" y="60" width="92" height="9" rx="4" fill="#c98a52"/><rect x="22" y="69" width="8" height="18" rx="4" fill="#c98a52"/><rect x="90" y="69" width="8" height="18" rx="4" fill="#c98a52"/><path d="M42 36h40v24H42z" fill="#e9f2f8" stroke="#8a6446" stroke-width="4" stroke-linejoin="round"/><rect x="36" y="58" width="52" height="5" rx="2.5" fill="#8a6446"/><g stroke="#a8d8a0" stroke-width="4" stroke-linecap="round"><path d="M50 46h24M50 53h16"/></g><rect x="20" y="46" width="12" height="14" rx="3" fill="#e8607d"/></svg>`
+  };
+
+  // 질문 번호(0부터) → 화면 종류, 칸 라벨, 그림
+  const SCENES = {
+    2: { kind: "window", caps: ["쨍쨍한 햇살", "보송보송 구름", "창문 두드리는 비", "서늘하고 맑은 공기"], art: ["sun", "cloudy", "rain", "crisp"] },
+    3: { kind: "table",  caps: ["빵이랑 커피", "따끈한 국에 밥", "요거트에 과일", "물 한 잔이면 끝"], art: ["bread", "soup", "yogurt", "water"] },
+    7: { kind: "house",  caps: ["벽에 기대 앉기", "바닥에 드러눕기", "화장대 앞에 잠깐", "블로그 쓰는 책상"], art: ["wallseat", "floorlie", "vanity", "desk"] }
+  };
+
+  const ROOF = `<svg class="roof" viewBox="0 0 320 76" preserveAspectRatio="none"><path d="M160 4 L316 66 a10 10 0 0 1-4 10 H8 a10 10 0 0 1-4-10 Z" fill="#a8622a"/></svg>`;
+
+  function renderScene(qi) {
+    const sc = SCENES[qi], cur = QUESTIONS[qi];
+    const cells = sc.caps.map((cap, i) =>
+      `<button class="cell" type="button" data-i="${i}"><span class="art">${ART[sc.art[i]]}</span><span class="cap">${cap}</span></button>`
+    ).join("");
+
+    let inner;
+    if (sc.kind === "window") inner = `<div class="window-frame"><div class="scene-grid">${cells}</div></div><div class="sill"></div>`;
+    else if (sc.kind === "table") inner = `<div class="table-top"><div class="scene-grid">${cells}</div></div>`;
+    else inner = `<div class="house">${ROOF}<div class="house-body"><div class="scene-grid">${cells}</div></div></div>`;
+
+    $("sceneBody").innerHTML = `<p class="scene-q">${cur.q}</p>${inner}`;
+    $("sceneBody").querySelectorAll(".cell").forEach(b => {
+      b.onclick = () => {
+        b.classList.add("picked");
+        answers[qi] = +b.dataset.i;
+        setTimeout(() => { idx++; if (idx < QUESTIONS.length) renderQ(); else showResult(); }, 240);
+      };
+    });
+    show("s-scene");
+  }
+
+  function renderQ() {
+    document.body.dataset.q = idx;
+    if (SCENES[idx]) { renderScene(idx); return; }
+    const cur = QUESTIONS[idx];
+    $("qCount").textContent = `${idx + 1} / ${QUESTIONS.length}`;
+    $("bar").style.width = `${(idx / QUESTIONS.length) * 100}%`;
+    $("qText").textContent = cur.q;
+    const box = $("opts");
+    box.innerHTML = "";
+    cur.o.forEach((opt, i) => {
+      const b = document.createElement("button");
+      b.className = "opt";
+      b.textContent = opt[0];
+      b.onclick = () => {
+        b.classList.add("picked");
+        answers[idx] = i;
+        setTimeout(() => {
+          idx++;
+          if (idx < QUESTIONS.length) renderQ(); else showResult();
+        }, 220);
+      };
+      box.appendChild(b);
+    });
+    show("s-quiz");
+  }
+
+  function calcGift() {
+    const cnt = { light: 0, chair: 0, clock: 0 };
+    let shape = 0;
+    answers.forEach((pick, qi) => {
+      const [, cat, s] = QUESTIONS[qi].o[pick];
+      cnt[cat]++; shape += s;
+    });
+    let cat = "light";                        // 동점이면 조명 → 의자 → 시계 순
+    if (cnt.chair > cnt[cat]) cat = "chair";
+    if (cnt.clock > cnt[cat]) cat = "clock";
+    return cat === "light" ? (shape > 0 ? "light1" : "light2")
+         : cat === "chair" ? (shape > 0 ? "chair1" : "chair2")
+         :                   (shape > 0 ? "clock1" : "clock2");
+  }
+
+  function showResult() {
+    resultKey = finalKey = calcGift();
+    const g = GIFTS[resultKey];
+    const pic = $("giftPic");
+    pic.innerHTML = "";
+    pic.appendChild(giftPicture(resultKey));
+    $("giftName").textContent = g.name;
+    $("giftDesc").textContent = g.desc;
+    show("s-result");
+  }
+
+  function renderSwap() {
+    swapPick = finalKey;
+    const grid = $("giftGrid");
+    grid.innerHTML = "";
+    GIFT_KEYS.forEach(key => {
+      const b = document.createElement("button");
+      b.className = "gift-item" + (key === swapPick ? " on" : "");
+      b.type = "button";
+      b.dataset.key = key;
+      const circle = document.createElement("div");
+      circle.className = "gift-thumb";
+      circle.appendChild(giftPicture(key));
+      const label = document.createElement("span");
+      label.textContent = GIFTS[key].name;
+      b.append(circle, label);
+      b.onclick = () => {
+        swapPick = key;
+        grid.querySelectorAll(".gift-item").forEach(x => x.classList.toggle("on", x.dataset.key === key));
+      };
+      grid.appendChild(b);
+    });
+    show("s-swap");
+  }
+
+  function goDone() {
+    const g = GIFTS[finalKey];
+    const pic = $("donePic");
+    pic.innerHTML = "";
+    pic.appendChild(giftPicture(finalKey));
+    $("donePicked").textContent = `고른 선물: ${g.name}`;
+    show("s-done");
+  }
+
+  $("startBtn").onclick = () => { idx = 0; answers = []; renderQ(); };
+  $("claimBtn").onclick = () => { finalKey = resultKey; goDone(); };
+  $("swapBtn").onclick = renderSwap;
+  $("swapDoneBtn").onclick = () => { finalKey = swapPick; goDone(); };
+  $("againBtn").onclick = () => show("s-start");
+
+  // 뒤로가기
+  function goBack() {
+    const cur = document.querySelector(".screen.active").id;
+    if (cur === "s-quiz" || cur === "s-scene") {
+      if (idx > 0) { idx--; answers.length = idx; renderQ(); } else show("s-start");
+    } else if (cur === "s-result") {
+      idx = QUESTIONS.length - 1; answers.length = idx; renderQ();
+    } else if (cur === "s-swap") {
+      show("s-result");
+    } else if (cur === "s-done") {
+      show(finalKey === resultKey ? "s-result" : "s-swap");
+    }
+  }
+  document.querySelectorAll("[data-back]").forEach(b => b.onclick = goBack);
+
+  // ---------- 화면 문구 적용 ----------
+  const setHTML = (sel, html) => { const el = document.querySelector(sel); if (el) el.innerHTML = html; };
+  setHTML("#s-start h1", TEXT.title);
+  setHTML("#s-start .sub", TEXT.subtitle);
+  setHTML("#startBtn", TEXT.startBtn);
+  setHTML(".credit", TEXT.credit);
+  setHTML("#s-result .sub", TEXT.resultLead);
+  setHTML("#s-swap h2", TEXT.swapTitle);
+  setHTML("#s-swap .sub", TEXT.swapSub);
+  $("doneTitle").textContent = TEXT.doneTitle;
+  $("doneMsg").textContent = TEXT.doneMsg;
+</script>
+</body>
+</html>
